@@ -3,6 +3,7 @@
 import { Contacts, Contact, DelButton } from './Contacts.styled';
 
 export const ContactsList = ({ filterContacts, onDeleteContact }) => {
+   
   return (
     <Contacts>
       {filterContacts.map(({ id, name, number }) => {
