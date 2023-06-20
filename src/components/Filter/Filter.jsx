@@ -5,15 +5,15 @@ import { FilterContact } from './Filter.styled';
 export const Filter = () => {
   const dispatch = useDispatch();
 
-  const searchContact = ({ target: { value } }) => {
-    dispatch(filterContact(value));
+  const searchContact = (e) => {
+    dispatch(filterContact(e.target.value));
   };
+
   return (
     <div>
-      <p>Find contacts by name</p> <br />
+      <p>Find contacts by name</p>
       <FilterContact
         type="text"
-        value={value}
         name="filter"
         placeholder="Search contact"
         onChange={searchContact}
