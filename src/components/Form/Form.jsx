@@ -1,39 +1,38 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Label, Field, FormSubmit } from './Form.styled';
-export const ContactForm = ({ addContact }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+import shortid from 'shortid';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from '../../redux/contactsSlice';
 
-  const handleChange = e => {
-    const { name, value } = e.currentTarget;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        return;
+
+export const ContactForm = () => {
+ const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts);
+  const contactId = () => {
+    return shortid.generate();
+  };
+ const handlSubmit = (values, actions) => {
+    const isContact = contacts.some(
+      ({ name }) => name.toLowerCase() === values.name.toLowerCase()
+    );
+    if (isContact) {
+      actions.resetForm();
+      return toast.error(`${values.name} is already in your contacts`, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
-  };
-  //or
-  /// name === 'name' ? setName(value) : setNumber(value);
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    addContact({ name, number });
-    formReset();
-  };
-
-  const formReset = () => {
-    setName('');
-    setNumber('');
+    const newContact = {
+      id: contactId(),
+      name: values.name,
+      number: values.number,
+    };
+    dispatch(addContact(newContact));
+    actions.resetForm();
   };
 
   return (
-    <Form autoComplete="off" onSubmit={handleSubmit}>
+    <Form autoComplete="off" onSubmit={handlSubmit}>
       <Label>
         Name
         <Field
@@ -44,7 +43,7 @@ export const ContactForm = ({ addContact }) => {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          onChange={handleChange}
+        
         />
       </Label>
       <Label>
@@ -57,7 +56,7 @@ export const ContactForm = ({ addContact }) => {
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          onChange={handleChange}
+         
         />
       </Label>
       <FormSubmit type="submit">Add contact</FormSubmit>
